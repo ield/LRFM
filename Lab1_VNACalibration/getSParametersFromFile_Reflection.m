@@ -14,7 +14,7 @@ data_spar = str2double(data_spar{1}(initial_data:end));
 
 freq_unit = 1;      % Units of frequency (respect to Hz). Hz = 1. GHz = 1e9
 Z0 = 50;            % Reference impedance, Ohm
-num_columns = 3;    % Columns: f + real and imag of each sparameter
+num_columns = 9;    % Columns: f + real and imag of each sparameter
 
 f = data_spar(1:num_columns:end)/freq_unit;
 

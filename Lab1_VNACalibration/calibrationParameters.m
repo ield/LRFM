@@ -1,4 +1,5 @@
 clear;
+save_path = '../../Lab1_VNACalibration/Images/';
 %% Open the measurements
 % Open the S-Parameters of the thru and the line, measures taken with the
 % VNA
@@ -51,7 +52,7 @@ f = R_T(2,1,:)./g;
 
 c_over_a = 1./a_over_c;
 
-r22rho22 = g.*(1-e.*c_over_a)./(1-b.*c_over_a);
+r22_rho22 = g.*(1-e.*c_over_a)./(1-b.*c_over_a);
 gamma = (f-d.*c_over_a)./(1-e.*c_over_a);
 alpha_a = (d - b.*f)./(1-e.*c_over_a);
 beta_over_alpha = (e-b)./(d-b.*f);
@@ -76,10 +77,11 @@ rho_R_a_sol2 = (s_obj_r1.Parameters(1,1,:) - b)./...
 figure('Color',[1 1 1]);
 set(gcf,'position',[100,100,400,300]);
 set(gca,'FontSize',11, 'fontname','Times New Roman');
-plot(rho_R_a_sol1(:)); hold on;
-plot(rho_R_a_sol2(:)); hold on;
+smithplot(s_obj_r1.Frequencies, rho_R_a_sol1(:)); hold on;
+smithplot(s_obj_r1.Frequencies, rho_R_a_sol2(:)); hold on;
 title('\Gamma_R for each solution of a');
-legend('+ sol', '- sol', 'ocation', 'best');
+legend('+ sol', '- sol', 'Location', 'eastoutside');
+% saveas(gca, [save_path, 'smit_refflection'],'epsc');
 
 % Check the best parameter: the one closest to one, because the reflection
 % is an open circuit
@@ -113,11 +115,13 @@ figure('Color',[1 1 1]);
 set(gcf,'position',[100,100,400,300]);
 set(gca,'FontSize',11, 'fontname','Times New Roman');
 plot(s_obj_r1.Frequencies/1e9, error(:));
-title('|\Gamma_{R port 1} - \Gamma_{R port 2}|');
+xlim([s_obj_r1.Frequencies(1) s_obj_r1.Frequencies(end)]/1e9);
+% title('|\Gamma_{R port 1} - \Gamma_{R port 2}|');
 xlabel('f (GHz)');
+saveas(gca, [save_path, 'error_reflection'],'epsc');
 
 % Obtain the S-parameters of the line
-R_line = obtain_R_DUT(a, b, c, alpha, beta, gamma, r22rho22, R_L);
+R_line = obtain_R_DUT(a, b, c, alpha, beta, gamma, r22_rho22, R_L);
 S_line = t2s(R_line);
 
 % Obtain the phase delay of the line
@@ -135,8 +139,27 @@ plot(s_obj_r1.Frequencies/1e9, phase_delay);
 title('Phase delay of the line(\tau_l)');
 xlabel('f (GHz)');
 ylabel('s');
+xlim([s_obj_r1.Frequencies(1) s_obj_r1.Frequencies(end)]/1e9);
+saveas(gca, [save_path, 'phase_delay'],'epsc');
+
 fprintf('The mean phase delay is %f s\n', mean(phase_delay));
 
+%% Check that all the parameters fit the desired expectations
+figure('Color',[1 1 1]);
+set(gcf,'position',[100,100,400,300]);
+set(gca,'FontSize',11, 'fontname','Times New Roman');
+plot(s_obj_r1.Frequencies/1e9, abs(a(:))); hold on;
+plot(s_obj_r1.Frequencies/1e9, abs(b(:))); hold on; 
+plot(s_obj_r1.Frequencies/1e9, abs(c(:))); hold on;
+plot(s_obj_r1.Frequencies/1e9, abs(alpha(:))); hold on;
+plot(s_obj_r1.Frequencies/1e9, abs(beta(:))); hold on;
+plot(s_obj_r1.Frequencies/1e9, abs(gamma(:))); hold on;
+plot(s_obj_r1.Frequencies/1e9, abs(r22_rho22(:)));
+xlabel('f (GHz)');
+xlim([s_obj_r1.Frequencies(1) s_obj_r1.Frequencies(end)]/1e9);
+legend('|a|', '|b|', '|c|', '|\alpha|', '|\beta|', '|\gamma|', ...
+    '|r_{22} \rho_{22}|', 'Location', 'best');
+saveas(gca, [save_path, 'abs_parameters'],'epsc');
 %% Save all the calibration parameters
 freq = s_obj_r1.Frequencies;
 filename = 'calibration_TRL.mat';
