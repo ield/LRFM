@@ -34,7 +34,13 @@ fprintf('The mean phase delay is %f s\n', mean(phase_delay(2:300)*1e12));
 fmin = 3e8 / (18*length_line);
 fmax = 4*3e8 / (9*length_line);
 
-fprintf('fmin = %f GHz, fmax = %f GHz\n', fmin/1e9, fmax/1e9);
+fprintf('Without considering the substract: fmin = %f GHz, fmax = %f GHz\n', ...
+    fmin/1e9, fmax/1e9);
+epsilon_r = 4.2;
+fmin = 3e8 / (18*sqrt(epsilon_r)*length_line);
+fmax = 4*3e8 / (9*sqrt(epsilon_r)*length_line);
+fprintf('Considering the substract: fmin = %f GHz, fmax = %f GHz\n', ...
+    fmin/1e9, fmax/1e9);
 
 end
 

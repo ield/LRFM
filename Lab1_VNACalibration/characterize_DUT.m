@@ -31,6 +31,8 @@ plot(freq/1e9, s12); hold on;
 plot(freq/1e9, s21); hold on;
 plot(freq/1e9, s22); hold on;
 xlim([freq(1) freq(end)]/1e9);
+xlabel('Frequency (GHz)');
+ylabel('dB');
 legend('s_{11}', 's_{12}', 's_{21}', 's_{22}', 'Location', 'southeast');
 saveas(gca, [save_path, dut(1:end-4), '_mag'],'epsc');
 
@@ -48,6 +50,7 @@ plot(freq/1e9, phase_s11); hold on;
 plot(freq/1e9, phase_s12); hold on;
 plot(freq/1e9, phase_s21); hold on;
 plot(freq/1e9, phase_s22); hold on;
+xlabel('Frequency (GHz)');
 xlim([freq(1) freq(end)]/1e9);
 ylabel('Phase (º)');
 legend('<s_{11}', '<s_{12}', '<s_{21}', '<s_{22}', 'Location', 'best');
