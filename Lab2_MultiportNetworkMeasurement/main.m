@@ -12,6 +12,8 @@
 clear;
 clc;
 close all;
+save_path = '../../Lab2_MultiportNetworkMeasurement/Images/';
+
 %% Import S-parameters
 % The naming is ae[port of of the ae] __connected to__ dut[port of the dut]
 % l[port of the load]
@@ -26,6 +28,13 @@ close all;
 % The reference impedance is 30 Ohm
 Z0 = 30;
 
+% Plot the S-parameters of the measurement.
+plotS_Parameters_2port(s_par_ae1_dut1_ae2_dut2_l3, f, save_path, ...
+    'meas_1_z0');
+plotS_Parameters_2port(s_par_ae1_dut1_ae2_dut3_l2, f, save_path, ...
+    'meas_2_z0');
+plotS_Parameters_2port(s_par_ae1_dut2_ae2_dut3_l1, f, save_path, ...
+    'meas_3_z0');
 %% Modify the reference impedance of the S-parameters
 % The s-parameters are transformed from z0 tozl1, zl2, zl3... Since zl1 =
 % zl2 = zl3, they are all transformed to zl
@@ -61,6 +70,14 @@ for ii = 1:length(f)
     s_par_ae1_dut2_ae2_dut3_l1_zl(:,:,ii) = ...
         G*inv(U-Sa)*(Sa-eta)*inv(U-Sa*eta)*(U-Sa)*inv(G);
 end
+
+% Plot the new S-parameters referred to Zl
+plotS_Parameters_2port(s_par_ae1_dut1_ae2_dut2_l3_zl, f, save_path, ...
+    'meas_1_zl');
+plotS_Parameters_2port(s_par_ae1_dut1_ae2_dut3_l2_zl, f, save_path, ...
+    'meas_2_zl');
+plotS_Parameters_2port(s_par_ae1_dut2_ae2_dut3_l1_zl, f, save_path, ...
+    'meas_3_zl');
 %% Refer the S-parameters to the device
 % There are some of the parameters duplicated. They are differentiated by
 % the load port.
@@ -108,36 +125,13 @@ s32_zl = s32_zl(:);
 s33_l1_zl = s_par_ae1_dut2_ae2_dut3_l1_zl(2, 2, :);    
 s33_l1_zl = s33_l1_zl(:);
 
-% Once all the parameters are taken, they are plotted in mod and phase
-
-figure('Color',[1 1 1]);
-
-plot(f, 20*log10(abs(s11_l3_zl)));  hold on;
-plot(f, 20*log10(abs(s12_zl)));     hold on;
-plot(f, 20*log10(abs(s13_zl)));     hold on;
-plot(f, 20*log10(abs(s21_zl)));     hold on;
-plot(f, 20*log10(abs(s22_l3_zl)));  hold on;
-plot(f, 20*log10(abs(s23_zl)));     hold on;
-plot(f, 20*log10(abs(s31_zl)));     hold on;
-plot(f, 20*log10(abs(s32_zl)));     hold on;
-plot(f, 20*log10(abs(s33_l1_zl)));  hold on;
-legend('s_{11}', 's_{12}', 's_{13}', 's_{21}', 's_{22}', 's_{23}',...
-    's_{31}','s_{32}','s_{33}');
-
-
-set(gcf,'position',[100,100,1200,900]);
-set(gca,'FontSize',11, 'fontname','Times New Roman');
-
-figure('Color',[1 1 1]);
-
-plot(f, 20*log10(abs(s11_l3_zl - s11_l2_zl)));  hold on;
-plot(f, 20*log10(abs(s22_l3_zl - s22_l1_zl)));  hold on;
-plot(f, 20*log10(abs(s33_l1_zl - s33_l2_zl)));  hold on;
-legend('\Deltas_{11}', '\Deltas_{22}', '\Deltas_{33}');
-
-
-set(gcf,'position',[100,100,1200,900]);
-set(gca,'FontSize',11, 'fontname','Times New Roman');
+% View the error between the redundant parameters
+redundant_parameters(s11_l3_zl, s11_l2_zl, f, 'Meas 1', 'Meas 2', ...
+    save_path, 's11_redundant');
+redundant_parameters(s22_l3_zl, s22_l1_zl, f, 'Meas 1', 'Meas 3', ...
+    save_path, 's22_redundant');
+redundant_parameters(s33_l2_zl, s33_l1_zl, f, 'Meas 2', 'Meas 3', ...
+    save_path, 's33_redundant');
 
 %% Transform S-parameters from Z0 to Zl
 s_par_zl = zeros(3, 3, length(f));
@@ -151,6 +145,9 @@ s_par_zl(3, 1, :) = s31_zl;
 s_par_zl(3, 2, :) = s32_zl;
 s_par_zl(3, 3, :) = s33_l1_zl;
 
+% Once all the parameters are taken, they are plotted in mod and phase
+plotS_Parameters_3port(s_par_zl, f, save_path, 's_par_zl');
+
 s_par_z0 = zeros(3, 3, length(f));
 
 for ii = 1:length(f)
@@ -162,10 +159,19 @@ for ii = 1:length(f)
     s_par_z0(:,:,ii) = G*inv(U-Sa)*(Sa-eta)*inv(U-Sa*eta)*(U-Sa)*inv(G);
 end
 
-figure;
-sobj = sparameters(s_par_z0, f, Z0);    
-rfplot(sobj)
+% Once all the parameters are taken, they are plotted in mod and phase
+plotS_Parameters_3port(s_par_z0, f, save_path, 's_par_z0');
 
+%% Figure out the purpose of the device
+% It is checked for symmetries: s_mn = s_nm
+parToPlot = [1 2; 2 1; 1 3; 3 1; 2 3; 3 2];
+plot_Transmission_Parameters(s_par_z0, parToPlot, f, save_path, ...
+    'reciprocal');
+
+% It is checked if the device is a -3 dB hybrid coupler
+parToPlot = [1 1; 2 1; 3 1];
+plot_Transmission_Parameters(s_par_z0, parToPlot, f, save_path, ...
+    'hybrid', 1);
 
 
 
