@@ -10,7 +10,7 @@ plot(f/1e9, 20*log10(abs(s1))); hold on;
 plot(f/1e9, 20*log10(abs(s2))); hold on;
 xlim([f(1) f(end)]/1e9);
 ylim([-50 10]);
-xlabel('fuency (GHz)');
+xlabel('Frequency (GHz)');
 ylabel('dB');
 legend(legend1, legend2, 'Location', 'southeast');
 

@@ -26,7 +26,7 @@ xlim([f(1) f(end)]/1e9);
 if special == 0
     ylim([-50 10]);
 elseif special == 1 % If it is a -3dB coupler
-    ylim([-5 1]);
+    ylim([-5 -2]);
 end
 
 xlabel('Frequency (GHz)');
