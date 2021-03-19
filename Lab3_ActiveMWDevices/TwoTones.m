@@ -14,6 +14,8 @@ t=n/fs;           % Time vector
 signal=exp(1j*2*pi*f_tone*t+1j*2*pi*rand())+exp(1j*2*pi*(-f_tone)*t+1j*2*pi*rand());
 signalFFT=fft(signal.*hann(NumSamples)',1024);          % Hanning windowing
 
+figure('Color',[1 1 1]);
+
 subplot(2,1,1)
 plot(cat(2,((0:511)*fs/1024*10^-6)-fs/2*10^-6,(0:511)*fs/1024*10^-6),...
     cat(2,20*log10(abs(signalFFT(512:end))),20*log10(abs(signalFFT(1:511))))-49.87);
@@ -28,3 +30,9 @@ plot(t,imag(signal));
 legend('I-Component','Q-Component')
 
 vector_a_agilent(signal,'2TONES'); % Function to generate the MXG readable file
+
+set(gcf,'position',[100,100,400,300]);
+set(gca,'FontSize',11, 'fontname','Times New Roman');
+
+save_path = '../../Lab3_ActiveMWDevices/Images/';
+saveas(gca, [save_path, '2_tones'],'epsc');

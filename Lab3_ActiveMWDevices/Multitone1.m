@@ -17,6 +17,8 @@ signal=ones(1,625); % The central tone is at DC before modulation
 numTones=floor((NumPortadoras-1)/2);
 
 tone_to_delete = 3;
+% tone_to_delete = 20;
+
 
 for n=1:numTones
     if n == tone_to_delete
@@ -29,6 +31,8 @@ end
 numTonesWithCarrier=2*numTones + 1;
 
 signalFFT=fft(signal.*hann(NumMuestras)',1024*10);
+
+figure('Color',[1 1 1]);
 
 subplot(2,1,1)
 plot(cat(2,((0:5119)*fs/10240*10^-6)-fs/2*10^-6,(0:5119)*fs/10240*10^-6),...
@@ -46,3 +50,9 @@ plot(t,imag(signal));
 legend('I-Component','Q-Component')
 axis tight
 grid
+
+set(gcf,'position',[100,100,400,300]);
+set(gca,'FontSize',11, 'fontname','Times New Roman');
+
+save_path = '../../Lab3_ActiveMWDevices/Images/';
+% saveas(gca, [save_path, 'multitone_notch'],'epsc');
