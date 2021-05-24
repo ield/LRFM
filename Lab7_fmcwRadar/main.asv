@@ -1,0 +1,18 @@
+%% General data
+c = 2e8;
+f_m = 135.63;
+Delta_f_1 = 120e6;
+Delta_f_2 = 60e6;
+%% Exercise 1
+% Time domain
+% Datos 1
+x1 = 9.216e-4;
+x2 = 5.184e-3;
+n_periods = 6;
+
+T_b = (x2-x1)/n_periods;
+f_b = 1/T_b;
+
+R = c*f_b/(f_m*Delta_f_1)
+
+fprintf('T_b = %f ms. f_b = %f kHz. R = %f m', T_b

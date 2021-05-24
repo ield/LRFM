@@ -15,6 +15,7 @@ figure('Color',[1 1 1]);
 set(gcf,'position',[100,100,400,300]);
 
 plot(f*1e9, 20*log10(abs(s11_complete)));
+xlim([f(1) f(end)]*1e9);
 xlabel('Frequency (GHz)');
 ylabel('s_{11} (dB)');
 set(gca,'FontSize',11, 'fontname','Times New Roman');
@@ -32,7 +33,7 @@ set(gcf,'position',[100,100,400,300]);
 plot(f*1e9, 20*log10(abs(s11_windowed))); hold on;
 plot(f*1e9, 20*log10(abs(window_kaiser))); hold on;
 plot(f*1e9, 20*log10(abs(s11_complete)), ':');
-
+xlim([f(1) f(end)]*1e9);
 xlabel('Frequency (GHz)');
 ylabel('s_{11} (dB)');
 legend('Windowed s_{11}', 'Kaiser Window', 'Measured signal', ...
@@ -48,7 +49,8 @@ figure('Color',[1 1 1]);
 set(gcf,'position',[100,100,800,300]); 
 
 subplot(1, 2, 1);
-plot(t*1e9, s11_time)
+plot(t*1e9, s11_time);
+xlim([t(1) t(end)]*1e9);
 xlabel('Time (ns)');
 set(gca,'FontSize',11, 'fontname','Times New Roman');
 
@@ -70,7 +72,7 @@ fprintf('t = %f ns', t_filter*1e9);
 
 % It is determined the gate used: the effects of the connector must be
 % corrected before and after the filter
-t_ini = 4e-9;
+t_ini = 5e-9;
 t_fin = 10.5e-9;
 tram = 0.5e-9;
 gate_filter = gate(t, t_ini, t_fin, tram);
@@ -83,6 +85,7 @@ subplot(1, 2, 1);
 plot(t*1e9, s11_time_gated/max(s11_time)); hold on;
 plot(t*1e9, gate_filter); hold on;
 plot(t*1e9, s11_time/max(s11_time), ':k'); hold on;
+xlim([t(1) t(end)]*1e9);
 legend('Normalized gated, windowed signal', 'Gate', ...
     'Normalized windowed signal', 'location', 'southwest');
 
@@ -98,7 +101,7 @@ xlim([0 25]);
 xlabel('Time (ns)');
 set(gca,'FontSize',11, 'fontname','Times New Roman');
 
-saveas(gca, [save_path, 'gated_time'],'epsc');
+saveas(gca, [save_path, 'gated'],'epsc');
 
 % Obtain the corrected signal in the frequency domain
 s11_corrected_windowed = fftuni(s11_time_gated);
@@ -108,7 +111,7 @@ set(gcf,'position',[100,100,400,300]);
 
 plot(f*1e9, 20*log10(abs(s11_corrected_windowed))); hold on;
 plot(f*1e9, 20*log10(abs(s11_complete)), ':');
-
+xlim([f(1) f(end)]*1e9);
 xlabel('Frequency (GHz)');
 ylabel('s_{11} (dB)');
 legend('Windowed, corrected s_{11}', 'Measured signal', ...
@@ -125,7 +128,7 @@ set(gcf,'position',[100,100,400,300]);
 
 plot(f*1e9, 20*log10(abs(s11_corrected))); hold on;
 plot(f*1e9, 20*log10(abs(s11_complete)), ':');
-
+xlim([f(1) f(end)]*1e9);
 xlabel('Frequency (GHz)');
 ylabel('s_{11} (dB)');
 legend('Corrected s_{11}', 'Measured signal', ...
